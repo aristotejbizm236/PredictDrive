@@ -1,0 +1,78 @@
+Ce document complémentaire est conçu pour enrichir les capacités de raisonnement de l'IA **PredictDrive**. Il permet de passer d'une simple base de données statique à un système capable de mener une expertise interactive et hiérarchisée.
+
+---
+
+# ADDENDUM TECHNIQUE : PROTOCOLES DE DIAGNOSTIC ET SÉCURITÉ CLIO 4
+
+## 1. PROCÉDURES DE DIAGNOSTIC DÉTAILLÉES
+
+Pour chaque incident, l'IA doit suivre une approche structurée : **Interrogatoire > Symptomatologie > Test physique.**
+
+### A. Arbre de décision : Perte de puissance (Mode dégradé)
+1.  **Question au conducteur :** "Le voyant 'Injection à contrôler' est-il accompagné d'un sifflement ?"
+    * *Si OUI :* Probable durite de turbo percée ou échangeur dessoudé.
+    * *Si NON :* Passer à l'étape 2.
+2.  **Test :** Vérifier la couleur de la fumée à l'échappement.
+    * *Fumée Noire :* Vanne EGR bloquée ou injection trop riche.
+    * *Fumée Blanche/Bleue :* Palier de turbo HS (fuite d'huile).
+3.  **Action :** Mesure de la pression de suralimentation via l'OBD.
+
+### B. Arbre de décision : Bruit anormal train avant
+1.  **Question au conducteur :** "Le bruit survient-il sur les bosses ou lors du braquage ?"
+    * *Sur les bosses :* Vérifier silentblocs de barre stabilisatrice ou coupelles d'amortisseurs.
+    * *Au braquage :* Vérifier rotules de direction ou cardans (si claquement sec).
+2.  **Test :** Mise sur pont, recherche de jeu avec un levier sur les triangles de suspension.
+
+---
+
+## 2. COMBINAISONS DE PANNES DANGEREUSES (ALERTE ROUGE)
+
+Certaines combinaisons de symptômes indiquent un risque de destruction moteur immédiate ou un danger pour la sécurité des passagers.
+
+### Cas 1 : Risque de Casse Moteur Immédiate (1.2 TCe)
+* **Symptôme A :** Niveau d'huile sous le minimum (jauge manuelle).
+* **Symptôme B :** Bruit de claquement métallique (chaîne de distribution détendue).
+* **Symptôme C :** Voyant "Pression huile" qui clignote au ralenti.
+* **Urgence :** **ABSOLUE.** Ne plus démarrer le véhicule. La pompe à huile ne parvient plus à lubrifier la chaîne à cause de la dégradation de l'huile.
+
+### Cas 2 : Emballement Moteur (1.5 dCi)
+* **Symptôme A :** Niveau d'huile qui augmente anormalement (dilution par le gasoil).
+* **Symptôme B :** Sifflement aigu du turbo.
+* **Urgence :** **CRITIQUE.** Risque d'auto-combustion de l'huile. Le moteur peut monter au régime maximum seul jusqu'à explosion.
+* **Seuil combiné :** Niveau d'huile > 2cm au-dessus du max + régénérations FAP échouées à répétition.
+
+### Cas 3 : Défaillance Système de Freinage
+* **Symptôme A :** Pédale de frein molle.
+* **Symptôme B :** Niveau de liquide de frein en baisse.
+* **Urgence :** **ABSOLUE.** Fuite sur un cylindre de roue arrière (fréquent sur les freins à tambour des versions 75/90ch).
+
+---
+
+## 3. CONSEILS PRÉVENTIFS PAR SAISON
+
+### Hiver (Prévention Démarrage & Visibilité)
+* **Batterie :** Sur Clio 4, le Stop&Start sollicite énormément la batterie. Un test de tension est requis dès que la température chute sous **5°C**.
+* **Bougies de préchauffage (dCi) :** À tester préventivement si le véhicule a plus de 100 000 km pour éviter de forcer sur le démarreur.
+* **Essuie-glaces :** Vérifier l'état des balais (souvent négligés sur ce modèle, causant des rayures sur le pare-brise fragile).
+
+### Été (Prévention Refroidissement & Clim)
+* **Climatisation :** Sur Clio 4, le condenseur est très exposé aux gravillons. Une recharge avec traceur est conseillée tous les 2 ans.
+* **Circuit de refroidissement :** Le boîtier d'eau (thermostat) des moteurs 0.9 TCe a tendance à se fissurer avec les fortes chaleurs. Vérifier l'absence de traces blanches (résidus de liquide) sur le bloc moteur.
+* **Refroidissement Turbo :** Après un long trajet autoroutier, laisser le moteur tourner au ralenti 30 secondes avant l'arrêt pour protéger le turbo.
+
+### Mi-saison (Automne/Printemps)
+* **Évacuations de Baie de Pare-brise :** **Point critique sur Clio 4.** Les drains s'obstruent avec les feuilles mortes.
+    * *Risque :* Inondation du moteur d'essuie-glace et infiltration d'eau dans l'habitacle (boîtier habitacle UCH en danger).
+* **Pression des pneus :** Ajuster suite aux variations de température pour éviter les fausses alertes du système TPMS (fréquentes sur ce modèle).
+
+---
+
+## 4. TABLEAU DES SEUILS DE TOLÉRANCE RAG
+
+| Paramètre | Valeur Nominale | Seuil de Vigilance | Seuil de Panne |
+| :--- | :--- | :--- | :--- |
+| **Charge Alternateur** | 14.2 V | < 13.2 V | < 12.5 V (Régulateur HS) |
+| **Retour Injecteur (dCi)** | Équilibré | Écart > 15% | Écart > 30% (Injecteur à changer) |
+| **Température Air Admission** | T° ambiante + 15°C | > 60°C | Capteur MAP ou Intercooler HS |
+| **Résistance Bougies Préchaud.** | < 1.0 Ohm | 1.5 - 5.0 Ohm | > 10 Ohm (Coupée) |
+

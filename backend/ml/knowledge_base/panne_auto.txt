@@ -1,0 +1,125 @@
+# BASE DE CONNAISSANCES TECHNIQUE RENAULT (2012-2026)
+
+## 1. SEGMENT CITADINES & COMPACTES
+
+### Clio IV (2012-2020) & Clio V (2019-Présent)
+* **Motorisations :** 0.9 TCe, 1.2 16v, 1.2 TCe, 1.3 TCe, 1.5 dCi, 1.6 E-Tech (Hybride).
+* **Distribution :** Chaîne sur TCe (sauf 1.2 16v) ; Courroie sur dCi (150 000 km / 6 ans).
+* **Top 5 Pannes :**
+    1.  **Surconsommation d'huile (1.2 TCe H5Ft) :** Défaut de segmentation. *Solution :* Remplacement moteur ou reprogrammation.
+    2.  **Usure prématurée embrayage (EDC) :** Broutements. *Solution :* Remplacement kit double embrayage.
+    3.  **Fuite boîtier thermostat (0.9 TCe) :** Plastique poreux. *Symptôme :* Baisse niveau LDR.
+    4.  **Bruit train avant (Clio IV) :** Silentblocs de barre stab. *Solution :* Graissage ou remplacement.
+    5.  **Écran R-Link noir :** Bug software. *Solution :* Update firmware ou reset batterie.
+
+### Twingo III (2014-2024)
+* **Architecture :** Propulsion, moteur arrière (0.9 TCe, 1.0 SCe).
+* **Points de vigilance :** Sensibilité au vent latéral, usure asymétrique des pneus arrière.
+* **Panne récurrente :** Capteur de pression de suralimentation (TCe) encrassé.
+
+---
+
+## 2. SEGMENT BERLINES & ROUTIÈRES
+
+### Megane IV (2016-Présent) & Talisman (2015-2022)
+* **Motorisations :** 1.3 TCe, 1.6 TCe, 1.5 dCi, 1.6 dCi, 1.7 dCi, 2.0 dCi.
+* **Top 5 Pannes :**
+    1.  **Système 4Control (4 roues directrices) :** Actionneur arrière bruyant ou bloqué.
+    2.  **Turbo (1.6 dCi 160) :** Fragilité du petit turbo (bi-turbo). *KM critique :* 100 000 km.
+    3.  **Climatisation :** Condenseur percé par des gravillons (grille trop ouverte).
+    4.  **Lien élastique train arrière :** Grincements sur Talisman.
+    5.  **FAP (dCi) :** Colmatage dû à l'injecteur d'adblue ou de gasoil dédié.
+
+---
+
+## 3. SEGMENT SUV & CROSSOVER
+
+### Captur I & II / Kadjar / Austral
+* **Austral (2022+) :** Focus sur le système 400V de l'E-Tech Full Hybrid.
+* **Points de vigilance Kadjar :** Problème de serrage de la rampe d'injection (risque incendie - Rappels effectués).
+* **Pannes récurrentes :**
+    * **Vérin de coffre :** Faiblesse structurelle.
+    * **Batterie 12V :** Décharge profonde sur les modèles hybrides si stationnement prolongé.
+
+---
+
+## 4. SEGMENT MONOSPACES & UTILITAIRES
+
+### Espace V (2015-2023) / Scenic IV
+* **Pannes critiques :**
+    * **Casse moteur (1.6 dCi) :** Problème de refroidissement cylindre 3.
+    * **Boîte EDC7 :** Surchauffe des actionneurs en usage urbain intensif.
+* **Utilitaires (Master / Trafic / Kangoo) :**
+    * **Système AdBlue :** Cristallisation dans le réservoir (P20EE). *Solution :* Remplacement réservoir + injecteur.
+
+---
+
+## 5. GAMME ÉLECTRIQUE (ZE / E-TECH)
+
+### Zoe / Megane E-Tech
+* **Points critiques :**
+    1.  **Moteur électrique (Zoe) :** Usure des roulements (sifflement aigu).
+    2.  **Chargeur Caméléon :** Sensibilité extrême à la qualité de la terre (Refus de charge).
+    3.  **Pompe à chaleur :** Dysfonctionnement par temps froid (Manque de gaz R1234yf).
+
+---
+
+## 6. DIAGNOSTIC TRANSVERSAL PAR SYMPTÔME
+
+| Symptôme | Causes Probables (Priorisées) | Solutions Recommandées |
+| :--- | :--- | :--- |
+| **Fumée Bleue** | Segmentation usée, palier de turbo HS. | Test compression / Inspection jeu turbo. |
+| **Fumée Blanche** | Joint de culasse, échangeur EGR percé. | Test CO2 dans LDR. |
+| **Fumée Noire** | Injecteur fuyard, durite turbo fendue. | Contrôle débitmètre et étanchéité air. |
+| **Démarrage Difficile** | Bougies préchauffage (dCi), Capteur PMH. | Mesure résistance bougies / Nettoyage PMH. |
+| **Moteur qui chauffe** | Pompe à eau débrayable (dCi) bloquée. | Remplacement pompe + kit distri. |
+
+---
+
+## 7. SEUILS CRITIQUES RENAULT
+
+* **Température LDR :**
+    * Normal : 82°C - 98°C.
+    * Alerte : 105°C (Voyant orange).
+    * Critique : 115°C (Arrêt moteur immédiat).
+* **Tension Batterie (Moteur OFF) :**
+    * Normal : 12.6V.
+    * Faible : < 12.1V (Désactivation Stop&Start).
+    * Critique : < 11.8V (Risque bug calculateurs).
+* **Pression Huile :**
+    * Ralenti : 0.8 - 1.2 bar.
+    * 3000 tr/min : 3.2 - 4.5 bar.
+
+---
+
+## 8. TOP 20 CODES DÉFAUTS OBD (P-CODES) RENAULT
+
+1.  **P0087 :** Pression rampe trop basse (Pompe HP ou filtre colmaté).
+2.  **P0101 :** Problème débitmètre (Encrassement ou fuite air).
+3.  **P0299 :** Sous-pression turbo (Durite fendue ou électrovanne).
+4.  **P0300 :** Ratés d'allumage cylindres multiples (Bougies/Bobines).
+5.  **P0380 :** Circuit bougies de préchauffage (Bougies HS).
+6.  **P0409 :** Capteur vanne EGR (Encrassement calamine).
+7.  **P0420 :** Catalyseur (Efficacité sous le seuil).
+8.  **P0520 :** Capteur pression huile (Défaut électrique).
+9.  **P0670 :** Module commande bougies préchauffage.
+10. **P1525 :** Cohérence informations multiplexées (Souvent lié au régulateur de vitesse en défaut).
+11. **P20EE :** Efficacité SCR (AdBlue - cristallisation).
+12. **P2264 :** Présence d'eau dans le filtre à gasoil.
+13. **P2502 :** Tension système de charge (Alternateur).
+14. **P0335 :** Capteur PMH (Signal absent).
+15. **P0121 :** Potentiomètre papillon (Piste usée).
+16. **P0470 :** Capteur de pression d'échappement (Fréquent sur dCi).
+17. **P0201 à P0204 :** Circuit injecteur (Coupure ou court-circuit).
+18. **P0544 :** Capteur température gaz échappement.
+19. **P0606 :** Microprocesseur PCM/ECM (Défaut interne calculateur).
+20. **P0115 :** Sonde température eau.
+
+---
+
+## 9. INTERVALLES D'ENTRETIEN STANDARDS
+
+* **Vidange :** Tous les 20 000 km ou 1 an (Essence) ; 30 000 km ou 1 an (Diesel). *Note : Réduire à 15 000 km pour préserver les moteurs TCe.*
+* **Distribution :** 150 000 km / 6 ans (Moteur K9K 1.5 dCi).
+* **Liquide de frein :** Tous les 3 ans ou 120 000 km.
+* **Filtre Habitacle :** Chaque année (Système de climatisation Renault sensible aux odeurs).
