@@ -476,7 +476,7 @@ Retourne l'historique des analyses pour un véhicule spécifique.
 
 ## 👤 Auteur
 
-**Jack** — Étudiant en informatique  
+**Jean-Bruno Aristote** — Étudiant en informatique  
 Projet réalisé dans le cadre d'un projet académique en Data Science et Intelligence Artificielle.
 
 ---
