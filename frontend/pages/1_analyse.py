@@ -2,47 +2,31 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import streamlit as st
 import requests
+from PIL import Image
+import os
 
 st.set_page_config(page_title="Analyse", page_icon="🔍", layout="wide")
 
 st.markdown("""
 <style>
     .stApp { background: #0a0a0a; }
-    
     section[data-testid="stSidebar"] {
         background: #0d0d0d;
         border-right: 1px solid rgba(0,255,200,0.2);
     }
-
-    /* Titre principal */
     .page-title {
         font-size: 3.5em;
         font-weight: 900;
         background: linear-gradient(90deg, #00ffc8, #00a896, #007cf0);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 0;
     }
-
     .page-subtitle {
         color: #8892a4;
-        font-size: 1.1em;
+        font-size: 1em;
         letter-spacing: 2px;
         text-transform: uppercase;
-        margin-top: 0;
     }
-
-    /* Formulaire card */
-    .form-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(0,255,200,0.15);
-        border-radius: 25px;
-        padding: 2.5em;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.5),
-                    0 0 40px rgba(0,255,200,0.05);
-    }
-
     .section-title {
         color: #00ffc8;
         font-size: 0.85em;
@@ -52,15 +36,12 @@ st.markdown("""
         border-bottom: 1px solid rgba(0,255,200,0.2);
         padding-bottom: 0.5em;
     }
-
-    /* Inputs */
     .stTextInput > div > div > input {
         background: rgba(255,255,255,0.05) !important;
         border: 1px solid rgba(0,255,200,0.3) !important;
         border-radius: 12px !important;
         color: white !important;
         padding: 0.8em !important;
-        font-size: 1em !important;
     }
     .stTextInput > div > div > input:focus {
         border-color: #00ffc8 !important;
@@ -78,17 +59,12 @@ st.markdown("""
         border-radius: 12px !important;
         color: white !important;
     }
-
-    /* Labels */
-    .stTextInput label, .stNumberInput label, 
-    .stSelectbox label {
+    .stTextInput label, .stNumberInput label, .stSelectbox label {
         color: #8892a4 !important;
         font-size: 0.85em !important;
         text-transform: uppercase !important;
         letter-spacing: 1px !important;
     }
-
-    /* Bouton analyse */
     .stFormSubmitButton > button {
         background: linear-gradient(135deg, #00ffc8, #00a896) !important;
         color: #0a0a0a !important;
@@ -101,31 +77,11 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(0,255,200,0.4) !important;
         letter-spacing: 2px !important;
         text-transform: uppercase !important;
-        transition: all 0.3s !important;
     }
     .stFormSubmitButton > button:hover {
         transform: translateY(-3px) !important;
         box-shadow: 0 12px 35px rgba(0,255,200,0.6) !important;
     }
-
-    /* Résultats */
-    .result-container {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(0,255,200,0.15);
-        border-radius: 25px;
-        padding: 2.5em;
-        margin-top: 2em;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
-
-    .result-title {
-        font-size: 1.5em;
-        font-weight: 800;
-        color: white;
-        margin-bottom: 1.5em;
-    }
-
-    /* Jauge état */
     .etat-badge {
         display: inline-block;
         padding: 0.5em 1.5em;
@@ -135,23 +91,23 @@ st.markdown("""
         letter-spacing: 2px;
         text-transform: uppercase;
     }
-    .etat-sain { 
-        background: rgba(0,255,136,0.15); 
+    .etat-sain {
+        background: rgba(0,255,136,0.15);
         border: 2px solid #00ff88;
         color: #00ff88;
     }
-    .etat-conseille { 
-        background: rgba(255,255,0,0.15); 
+    .etat-conseille {
+        background: rgba(255,255,0,0.15);
         border: 2px solid #ffff00;
         color: #ffff00;
     }
-    .etat-probable { 
-        background: rgba(255,165,0,0.15); 
+    .etat-probable {
+        background: rgba(255,165,0,0.15);
         border: 2px solid #ffa500;
         color: #ffa500;
     }
-    .etat-critique { 
-        background: rgba(255,68,68,0.15); 
+    .etat-critique {
+        background: rgba(255,68,68,0.15);
         border: 2px solid #ff4444;
         color: #ff4444;
         animation: pulse 1.5s infinite;
@@ -161,57 +117,6 @@ st.markdown("""
         70% { box-shadow: 0 0 0 10px rgba(255,68,68,0); }
         100% { box-shadow: 0 0 0 0 rgba(255,68,68,0); }
     }
-
-    /* Score bars */
-    .score-bar-container {
-        background: rgba(255,255,255,0.05);
-        border-radius: 50px;
-        height: 8px;
-        margin: 0.5em 0;
-        overflow: hidden;
-    }
-    .score-bar {
-        height: 100%;
-        border-radius: 50px;
-        background: linear-gradient(90deg, #00ffc8, #007cf0);
-        transition: width 1s ease;
-    }
-
-    /* Pieces cards */
-    .piece-card {
-        background: rgba(255,68,68,0.08);
-        border: 1px solid rgba(255,68,68,0.3);
-        border-radius: 12px;
-        padding: 0.8em 1.2em;
-        margin: 0.4em 0;
-        color: #ff8888;
-        font-size: 0.9em;
-    }
-
-    /* AutoBot response */
-    .autobot-card {
-        background: rgba(0,255,200,0.05);
-        border: 1px solid rgba(0,255,200,0.2);
-        border-radius: 20px;
-        padding: 2em;
-        margin-top: 1.5em;
-        position: relative;
-    }
-    .autobot-header {
-        color: #00ffc8;
-        font-weight: bold;
-        font-size: 1em;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        margin-bottom: 1em;
-    }
-    .autobot-text {
-        color: #cccccc;
-        line-height: 1.8;
-        font-size: 1em;
-    }
-
-    /* Metric cards */
     .metric-card {
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(0,255,200,0.15);
@@ -231,13 +136,68 @@ st.markdown("""
         letter-spacing: 1px;
         margin-top: 0.3em;
     }
-
+    .autobot-card {
+        background: rgba(0,255,200,0.05);
+        border: 1px solid rgba(0,255,200,0.2);
+        border-radius: 20px;
+        padding: 2em;
+        margin-top: 1.5em;
+    }
+    .stButton > button {
+        background: linear-gradient(135deg, #00ffc8, #00a896) !important;
+        color: #0a0a0a !important;
+        border: none !important;
+        border-radius: 50px !important;
+        font-weight: 900 !important;
+        width: 100% !important;
+        box-shadow: 0 4px 15px rgba(0,255,200,0.3) !important;
+    }
     hr { border-color: rgba(0,255,200,0.15) !important; }
 </style>
 """, unsafe_allow_html=True)
 
+# Logo
+logo_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'logo.png')
+logo = Image.open(logo_path)
+
+# Sidebar
+st.sidebar.image(logo, width=80)
+st.sidebar.markdown("""
+<p style="color:#00ffc8;font-weight:900;
+font-size:1.2em;letter-spacing:2px;
+text-align:center;margin-top:0.5em;">
+PredictDrive</p>
+""", unsafe_allow_html=True)
+st.sidebar.markdown("---")
+
 # Header
 col_title, col_info = st.columns([2, 1])
+with col_title:
+    st.markdown('<p class="page-title">🔍 Analyse</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-subtitle">Diagnostic IA en temps réel</p>', unsafe_allow_html=True)
+with col_info:
+    st.markdown("""
+    <div style="background:rgba(0,255,200,0.05);border:1px solid rgba(0,255,200,0.2);
+    border-radius:15px;padding:1em;margin-top:1em;">
+        <p style="color:#00ffc8;margin:0;font-size:0.85em;letter-spacing:1px;">
+        ⚡ MODELES ACTIFS
+        </p>
+        <p style="color:#cccccc;margin:0.3em 0 0 0;font-size:0.9em;">
+        XGBoost • Random Forest • Isolation Forest
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("---")
+
+# Formulaire
+st.markdown("""
+<div style="background:rgba(255,255,255,0.03);
+border:1px solid rgba(0,255,200,0.15);
+border-radius:25px;padding:2.5em;
+box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+""", unsafe_allow_html=True)
+
 with st.form("vehicle_form"):
     st.markdown('<p class="section-title">📋 Informations du véhicule</p>', unsafe_allow_html=True)
 
@@ -245,17 +205,15 @@ with st.form("vehicle_form"):
 
     with col1:
         matricule = st.text_input("Matricule", placeholder="AB-123-CD")
-        
         modele_renault = st.selectbox("Modèle Renault", [
-            "Clio IV", "Clio V", "Twingo III",
-            "Megane IV", "Laguna", "Talisman",
-            "Captur", "Kadjar", "Koleos",
-            "Arkana", "Austral", "Scenic IV",
-            "Grand Scenic", "Espace V",
-            "Kangoo", "Trafic", "Master",
-            "Zoe", "Megane E-Tech", "Kangoo E-Tech"
-        ])
-        
+    "Renault Austral",
+    "Renault Espace",
+    "Renault R4",
+    "Renault Scenic E-Tech",
+    "Renault Captur",
+    "Renault Clio",
+    "Renault Rafale"
+])
         kilometrage = st.number_input("Kilométrage (km)", min_value=0, max_value=500000, value=50000, step=1000)
         age_vehicule = st.number_input("Age du véhicule (ans)", min_value=1, max_value=50, value=5)
 
@@ -271,6 +229,9 @@ with st.form("vehicle_form"):
 
     st.markdown("<br>", unsafe_allow_html=True)
     submitted = st.form_submit_button("⚡ LANCER L'ANALYSE IA", use_container_width=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
 # Résultats
 if submitted:
     if not matricule:
@@ -296,8 +257,19 @@ if submitted:
                 if response.status_code == 200:
                     result = response.json()
 
-                    st.markdown('<div class="result-container">', unsafe_allow_html=True)
-                    st.markdown('<p class="result-title">📊 Résultats de l\'analyse</p>', unsafe_allow_html=True)
+                    st.markdown("---")
+                    st.markdown("""
+                    <div style="background:rgba(255,255,255,0.03);
+                    border:1px solid rgba(0,255,200,0.15);
+                    border-radius:25px;padding:2.5em;
+                    box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+                    """, unsafe_allow_html=True)
+
+                    st.markdown("""
+                    <p style="color:white;font-size:1.5em;
+                    font-weight:800;margin-bottom:1.5em;">
+                    📊 Résultats de l'analyse
+                    </p>""", unsafe_allow_html=True)
 
                     # Badge état
                     etat_classes = {
@@ -317,8 +289,12 @@ if submitted:
 
                     st.markdown(f"""
                     <div style="text-align:center;margin:1.5em 0;">
+                        <p style="color:#8892a4;font-size:0.8em;
+                        text-transform:uppercase;letter-spacing:2px;">
+                        Modèle analysé : {modele_renault}
+                        </p>
                         <span class="etat-badge {etat_class}">
-                            {etat_emoji} {result['etat'].replace('_', ' ').upper()}
+                            {etat_emoji} {result['etat'].replace('_',' ').upper()}
                         </span>
                     </div>
                     """, unsafe_allow_html=True)
@@ -358,7 +334,6 @@ if submitted:
 
                     # Recommandation + Pièces
                     col1, col2 = st.columns([3, 2])
-
                     with col1:
                         st.markdown("""
                         <p style="color:#00ffc8;font-size:0.85em;
@@ -381,41 +356,44 @@ if submitted:
                         🔧 Pièces à vérifier
                         </p>""", unsafe_allow_html=True)
                         for piece in result["pieces_a_verifier"]:
-                            st.markdown(f'<div class="piece-card">⚠️ {piece}</div>',
-                                      unsafe_allow_html=True)
+                            st.markdown(f"""
+                            <div style="background:rgba(255,68,68,0.08);
+                            border:1px solid rgba(255,68,68,0.3);
+                            border-radius:12px;padding:0.8em 1.2em;
+                            margin:0.4em 0;color:#ff8888;font-size:0.9em;">
+                            ⚠️ {piece}</div>
+                            """, unsafe_allow_html=True)
 
                     st.markdown('</div>', unsafe_allow_html=True)
 
-                    # AutoBot analyse
+                    # AutoBot
                     st.markdown("<br>", unsafe_allow_html=True)
-                    st.markdown("""
-                    <p style="color:#00ffc8;font-size:0.85em;
-                    text-transform:uppercase;letter-spacing:2px;">
-                    🤖 Analyse approfondie par AutoBot
-                    </p>""", unsafe_allow_html=True)
-
-                    with st.spinner("AutoBot analyse les résultats..."):
-                        try:
-                            chat_response = requests.post(
-                                "http://127.0.0.1:8000/api/chat",
-                                json={
-                                    "message": f"Analyse ce vehicule Renault : etat {result['etat']}, kilometrage {kilometrage} km, temperature {temperature_moteur}C, pression huile {pression_huile} bar, tension batterie {tension_batterie}V. Quelles sont les causes probables et les solutions ?",
-                                    "vehicle_context": result
-                                }
-                            )
-                            if chat_response.status_code == 200:
-                                st.markdown(f"""
-                                <div class="autobot-card">
-                                    <div class="autobot-header">
-                                        🤖 AutoBot — Powered by Phi-3 & RAG
-                                    </div>
-                                    <div class="autobot-text">
+                    if st.button("🤖 Demander l'avis d'AutoBot", use_container_width=True):
+                        with st.spinner("AutoBot analyse les résultats..."):
+                            try:
+                                chat_response = requests.post(
+                                    "http://127.0.0.1:8000/api/chat",
+                                    json={
+                                        "message": f"Analyse ce vehicule Renault {modele_renault} : etat {result['etat']}, kilometrage {kilometrage} km, temperature {temperature_moteur}C, pression huile {pression_huile} bar, tension batterie {tension_batterie}V. Quelles sont les causes et solutions ?",
+                                        "vehicle_context": result
+                                    },
+                                    timeout=120
+                                )
+                                if chat_response.status_code == 200:
+                                    st.markdown(f"""
+                                    <div class="autobot-card">
+                                        <p style="color:#00ffc8;font-weight:bold;
+                                        font-size:0.9em;letter-spacing:2px;
+                                        text-transform:uppercase;">
+                                        🤖 AutoBot — Powered by TinyLLaMA & RAG
+                                        </p>
+                                        <p style="color:#cccccc;line-height:1.8;">
                                         {chat_response.json()['response']}
+                                        </p>
                                     </div>
-                                </div>
-                                """, unsafe_allow_html=True)
-                        except:
-                            st.info("AutoBot indisponible pour le moment.")
+                                    """, unsafe_allow_html=True)
+                            except:
+                                st.info("AutoBot indisponible pour le moment.")
 
                 else:
                     st.error(f"Erreur API : {response.status_code}")

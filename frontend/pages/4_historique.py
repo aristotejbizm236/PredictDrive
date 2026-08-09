@@ -4,6 +4,8 @@ import streamlit as st
 import requests
 import pandas as pd
 import json
+from PIL import Image
+import os
 
 st.set_page_config(page_title="Historique", page_icon="📋", layout="wide")
 
@@ -14,36 +16,6 @@ st.markdown("""
         background: #0d0d0d;
         border-right: 1px solid rgba(0,255,200,0.2);
     }
-    .page-title {
-        font-size: 3.5em;
-        font-weight: 900;
-        background: linear-gradient(90deg, #00ffc8, #00a896, #007cf0);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    .page-subtitle {
-        color: #8892a4;
-        font-size: 1em;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-    }
-    .stTextInput > div > div > input {
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(0,255,200,0.3) !important;
-        border-radius: 50px !important;
-        color: white !important;
-        padding: 0.8em 1.5em !important;
-    }
-    .stTextInput > div > div > input:focus {
-        border-color: #00ffc8 !important;
-        box-shadow: 0 0 20px rgba(0,255,200,0.2) !important;
-    }
-    .stSelectbox > div > div {
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(0,255,200,0.3) !important;
-        border-radius: 12px !important;
-        color: white !important;
-    }
     .stButton > button {
         background: linear-gradient(135deg, #00ffc8, #00a896) !important;
         color: #0a0a0a !important;
@@ -53,30 +25,47 @@ st.markdown("""
         width: 100% !important;
         box-shadow: 0 4px 15px rgba(0,255,200,0.3) !important;
     }
-    .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(0,255,200,0.5) !important;
+    .stSelectbox > div > div {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(0,255,200,0.3) !important;
+        border-radius: 12px !important;
+        color: white !important;
     }
-    .vehicle-card {
-        background: rgba(255,255,255,0.03);
-        border-radius: 20px;
-        padding: 1.8em;
-        margin: 1em 0;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    .stTextInput > div > div > input {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(0,255,200,0.3) !important;
+        border-radius: 50px !important;
+        color: white !important;
+        padding: 0.8em 1.5em !important;
     }
-    .card-critique { border: 1px solid rgba(255,68,68,0.4); border-left: 5px solid #ff4444; }
-    .card-probable { border: 1px solid rgba(255,165,0,0.4); border-left: 5px solid #ffa500; }
-    .card-conseille { border: 1px solid rgba(255,255,0,0.4); border-left: 5px solid #ffff00; }
-    .card-sain { border: 1px solid rgba(0,255,136,0.4); border-left: 5px solid #00ff88; }
     hr { border-color: rgba(0,255,200,0.15) !important; }
 </style>
 """, unsafe_allow_html=True)
 
+# Logo
+logo_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'logo.png')
+logo = Image.open(logo_path)
+
+# Sidebar
+st.sidebar.image(logo, width=80)
+st.sidebar.markdown("""
+<p style="color:#00ffc8;font-weight:900;font-size:1.2em;
+letter-spacing:2px;text-align:center;margin-top:0.5em;">
+PredictDrive</p>
+""", unsafe_allow_html=True)
+st.sidebar.markdown("---")
+
 # Header
 col1, col2 = st.columns([3, 1])
 with col1:
-    st.markdown('<p class="page-title">📋 Historique</p>', unsafe_allow_html=True)
-    st.markdown('<p class="page-subtitle">Suivi complet des analyses véhicules</p>', unsafe_allow_html=True)
+    st.markdown("""
+    <p style="font-size:3.5em;font-weight:900;
+    background:linear-gradient(90deg,#00ffc8,#00a896,#007cf0);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:0;">📋 Historique</p>
+    <p style="color:#8892a4;font-size:1em;letter-spacing:2px;
+    text-transform:uppercase;">Suivi complet des analyses véhicules</p>
+    """, unsafe_allow_html=True)
 with col2:
     if st.button("🔄 Actualiser", use_container_width=True):
         st.rerun()
@@ -121,98 +110,61 @@ try:
         df = df[df["etat"] == filtre]
 
     st.markdown(f"**{len(df)} analyse(s) trouvee(s)**")
+    st.markdown("<br>", unsafe_allow_html=True)
 
+    # Affichage avec composants natifs
     for _, row in df.iterrows():
         etat_config = {
-            "panne_critique":      ("card-critique", "#ff4444", "🚨"),
-            "panne_probable":      ("card-probable",  "#ffa500", "⚠️"),
-            "entretien_conseille": ("card-conseille", "#ffff00", "🔧"),
-            "aucune_panne":        ("card-sain",      "#00ff88", "✅")
+            "panne_critique":      ("🚨", "red"),
+            "panne_probable":      ("⚠️", "orange"),
+            "entretien_conseille": ("🔧", "yellow"),
+            "aucune_panne":        ("✅", "green")
         }
-        card_class, color, emoji = etat_config.get(
-            row["etat"], ("card-sain", "#00ff88", "✅")
-        )
-
-        pieces = row.get("pieces_a_verifier", "[]")
-        if isinstance(pieces, str):
-            try:
-                pieces = json.loads(pieces)
-            except:
-                pieces = [pieces]
-
-        pieces_html = "".join([
-            f'<span style="display:inline-block;background:rgba(255,68,68,0.1);'
-            f'border:1px solid rgba(255,68,68,0.3);border-radius:50px;'
-            f'padding:0.3em 0.8em;margin:0.2em;color:#ff8888;font-size:0.8em;">⚠️ {p}</span>'
-            for p in pieces
-        ])
-
-        anomalie_color = "#ff4444" if row.get("anomalie_detectee") else "#00ff88"
-        anomalie_text = "Détectée" if row.get("anomalie_detectee") else "Aucune"
-        score_xgb = row.get('score_xgboost', 'N/A')
-        score_rf = row.get('score_random_forest', 'N/A')
+        emoji, couleur = etat_config.get(row["etat"], ("✅", "green"))
 
         with st.container():
             st.markdown(f"""
-            <div class="vehicle-card {card_class}">
-                <div style="display:flex;justify-content:space-between;
-                align-items:center;margin-bottom:1em;">
-                    <span style="color:white;font-size:1.3em;
-                    font-weight:900;letter-spacing:2px;">
-                        🚗 {row['matricule']}
-                    </span>
-                    <span style="color:#555;font-size:0.85em;">
-                        {row.get('created_at','N/A')}
-                    </span>
-                </div>
-                <div style="margin-bottom:1em;">
-                    <span style="background:rgba(255,255,255,0.05);
-                    border:1px solid {color}55;border-radius:50px;
-                    padding:0.3em 1em;color:{color};
-                    font-weight:bold;font-size:0.9em;letter-spacing:1px;">
-                        {emoji} {row['etat'].replace('_',' ').upper()}
-                    </span>
-                </div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);
-                gap:1em;margin:1em 0;">
-                    <div style="background:rgba(255,255,255,0.03);
-                    border-radius:10px;padding:0.8em;text-align:center;">
-                        <div style="color:#00ffc8;font-size:1.2em;
-                        font-weight:bold;">{score_xgb}%</div>
-                        <div style="color:#8892a4;font-size:0.75em;
-                        text-transform:uppercase;letter-spacing:1px;">XGBoost</div>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.03);
-                    border-radius:10px;padding:0.8em;text-align:center;">
-                        <div style="color:#007cf0;font-size:1.2em;
-                        font-weight:bold;">{score_rf}%</div>
-                        <div style="color:#8892a4;font-size:0.75em;
-                        text-transform:uppercase;letter-spacing:1px;">Random Forest</div>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.03);
-                    border-radius:10px;padding:0.8em;text-align:center;">
-                        <div style="color:{anomalie_color};font-size:1.2em;
-                        font-weight:bold;">{anomalie_text}</div>
-                        <div style="color:#8892a4;font-size:0.75em;
-                        text-transform:uppercase;letter-spacing:1px;">Anomalie</div>
-                    </div>
-                </div>
-                <div style="margin-top:1em;">
-                    <p style="color:#8892a4;font-size:0.8em;
-                    text-transform:uppercase;letter-spacing:1px;
-                    margin-bottom:0.5em;">🔧 Pièces à vérifier</p>
-                    {pieces_html}
-                </div>
-                <div style="background:rgba(0,255,200,0.05);
-                border:1px solid rgba(0,255,200,0.15);
-                border-radius:12px;padding:1em;margin-top:1em;
-                color:#cccccc;font-size:0.9em;line-height:1.6;">
-                    💡 {row.get('recommandation','N/A')}
-                </div>
+            <div style="border-left:5px solid {'#ff4444' if couleur=='red' else '#ffa500' if couleur=='orange' else '#ffff00' if couleur=='yellow' else '#00ff88'};
+            background:rgba(255,255,255,0.03);border-radius:0 20px 20px 0;
+            padding:0.5em 1em;margin-bottom:0.5em;">
+            <span style="color:white;font-size:1.1em;font-weight:900;">
+            🚗 {row['matricule']}</span>
+            <span style="color:#555;font-size:0.8em;float:right;">
+            {row.get('created_at','N/A')}</span>
             </div>
             """, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("État", f"{emoji} {row['etat'].replace('_',' ').upper()}")
+            with col2:
+                st.metric("XGBoost", f"{row.get('score_xgboost','N/A')}%")
+            with col3:
+                st.metric("Random Forest", f"{row.get('score_random_forest','N/A')}%")
+            with col4:
+                anomalie = "🔴 Oui" if row.get('anomalie_detectee') else "🟢 Non"
+                st.metric("Anomalie", anomalie)
+
+            # Pièces
+            pieces = row.get("pieces_a_verifier", "[]")
+            if isinstance(pieces, str):
+                try:
+                    pieces = json.loads(pieces)
+                except:
+                    pieces = [pieces]
+
+            if pieces:
+                st.markdown("**🔧 Pièces à vérifier :**")
+                cols = st.columns(len(pieces) if len(pieces) <= 4 else 4)
+                for i, piece in enumerate(pieces):
+                    with cols[i % 4]:
+                        st.error(f"⚠️ {piece}")
+
+            # Recommandation
+            st.info(f"💡 {row.get('recommandation', 'N/A')}")
+            st.markdown("---")
+
+    # Export
     csv = df.to_csv(index=False).encode('utf-8')
     st.download_button(
         label="⬇️ Exporter en CSV",

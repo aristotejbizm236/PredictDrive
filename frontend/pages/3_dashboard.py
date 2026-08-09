@@ -3,6 +3,8 @@ sys.stdout.reconfigure(encoding='utf-8')
 import streamlit as st
 import requests
 import pandas as pd
+from PIL import Image
+import os
 
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
 
@@ -82,6 +84,20 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Logo
+logo_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'logo.png')
+logo = Image.open(logo_path)
+
+# Sidebar
+st.sidebar.image(logo, width=80)
+st.sidebar.markdown("""
+<p style="color:#00ffc8;font-weight:900;
+font-size:1.2em;letter-spacing:2px;
+text-align:center;margin-top:0.5em;">
+PredictDrive</p>
+""", unsafe_allow_html=True)
+st.sidebar.markdown("---")
+
 # Header
 col1, col2 = st.columns([3, 1])
 with col1:
@@ -116,13 +132,13 @@ try:
 
     df = pd.DataFrame.from_records(data)
 
-    # Stats globales
+    # Stats
     total = len(df)
     critiques = len(df[df["etat"] == "panne_critique"])
     probables = len(df[df["etat"] == "panne_probable"])
     entretiens = len(df[df["etat"] == "entretien_conseille"])
     sains = len(df[df["etat"] == "aucune_panne"])
-    anomalies = df["anomalie_detectee"].sum() if "anomalie_detectee" in df.columns else 0
+    anomalies = int(df["anomalie_detectee"].sum()) if "anomalie_detectee" in df.columns else 0
 
     col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
@@ -130,7 +146,7 @@ try:
         <div class="stat-card">
             <div class="stat-icon">📋</div>
             <div class="stat-number">{total}</div>
-            <div class="stat-label">Total analyses</div>
+            <div class="stat-label">Total</div>
         </div>""", unsafe_allow_html=True)
     with col2:
         st.markdown(f"""
